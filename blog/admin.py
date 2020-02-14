@@ -5,4 +5,3 @@ admin.site.register(Post)
 admin.site.register(Profile)
 admin.site.register(FirstVsit)
 
-# Register your models here.

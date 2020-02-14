@@ -1,17 +1,16 @@
 from django.conf.urls import url
 from django.urls import path
-from .views import index, index_details,user_login
+from .views import index, index_details, user_login
 
 from django.contrib.auth import views as auth_views
-from .import views
+from . import views
 from django.http import request
 
-
 urlpatterns = [
-    path('',index, name='index'),
-    path('login',user_login, name='login'),
+    path('', index, name='index'),
+    path('login', user_login, name='login'),
     path('details/<slug:slug>/', index_details, name='detail'),
-    url(r'^$', views.dashboard, name='dashboard'),
+    # url(r'^$', views.dashboard, name='dashboard'),
     url(r'^register/$', views.register, name='register'),
     url(r'^edit/$', views.edit, name='edit'),
     # login/logout urls

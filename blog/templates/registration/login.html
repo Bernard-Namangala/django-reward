@@ -14,8 +14,8 @@ If you don't have account <a href="{% url 'register' %}">Register here</a></p></
 
 <div class="login-form">
     <form action="{% url 'login' %}" method="post">
+         {% csrf_token %}
     {{ form.as_p }}
-    {% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}"/>
         <p><input type="submit" value="Log-in"></p>
 </form>

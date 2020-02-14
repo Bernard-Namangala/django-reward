@@ -5,7 +5,7 @@
     <div><a href="{% url 'login' %}">login</a></div>
     {% for post in posts %}
     <div><h1>{{ post.title }}</h1></div>
-    <div>{{ post.image }}</div>
+    <div><img  src="{{post.image.url}}" width="200" height="200"/></div>
     <div>created by {{ post.author }}</div>
     <div>{{ post.content }}</div>
     <div><a href="{% url 'detail' post.slug %}">Read more</a> </div>
