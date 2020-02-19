@@ -1,12 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, reverse
 from .forms import LoginForm
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import login, authenticate
 from django.contrib import messages, sessions
-from .models import FirstVsit, Profile, Post
+from .models import FirstVsit, Profile, Post, Comment
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegistrationForm, UserEditForm, ProfileEditForm
+from .forms import UserRegistrationForm, UserEditForm, ProfileEditForm, CommentForm
 from django.db.models import F, Sum
 
 
@@ -46,19 +46,53 @@ def index(request):
 
 def index_details(request, slug):
     post_details = get_object_or_404(Post, slug=slug)
-    if request.user.is_authenticated:
-        # if user is  has already seen this post
-        if request.user in post_details.viewers.all():
-            print("user has seen this")
-        # else if this is the first time user has seen this post
-        else:
-            post_details.viewers.add(request.user)
-            post_details.save()
-            profile = Profile.objects.get(user=request.user)
-            profile.points += 50
-            profile.save()
-    return render(request, 'blog/details.html', {'details': post_details})
+    if request.method == "GET":
+        comment_form = CommentForm(label_suffix='')
+        comments = post_details.comment_set.all()
+        if request.user.is_authenticated:
+            # if user is  has already seen this post
+            if request.user in post_details.viewers.all():
+                print("user has seen this")
+            # else if this is the first time user has seen this post
+            else:
+                post_details.viewers.add(request.user)
+                post_details.save()
+                profile = Profile.objects.get(user=request.user)
+                profile.points += 50
+                profile.save()
+        return render(request, 'blog/details.html', {'details': post_details, 'comment_form': comment_form,
+                                                     'comments': comments})
+    # else if request is a post request
+    else:
+        if request.user.is_authenticated:
+            author_of_comment = request.user
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment_text = comment_form.cleaned_data['comment_text']
 
+            # if user has already commented on this post
+            if author_of_comment in post_details.commented.all():
+                print("User has already commented on this post")
+
+            # else if user has not commented on this post
+            else:
+                # if author is authenticated and is not None
+                if author_of_comment is not None:
+
+                    # add user to the commented list
+                    post_details.commented.add(author_of_comment)
+
+                    # get the profile of the current user and add 50 points to their account
+                    profile = Profile.objects.get(user=author_of_comment)
+                    profile.points = F('points') + 50
+                    profile.save()
+
+            # create a new comment instance for this post with the then set the author to current user
+            comment = Comment(comment_text=comment_text, post=post_details, author=author_of_comment)
+            comment.save()
+
+        # redirect to the details of the post
+        return HttpResponseRedirect(reverse('detail', args=(slug,)))
 
 # to check if a user have read a post
 @login_required
@@ -69,7 +103,7 @@ def link_click(request):
         user_point.save()
 
         FirstVsit(user=request.user, url=request.path).save()
-        return HttpResponse('you have earned 50points for reading this post')
+        return HttpResponse('you have earned 50 points for reading this post')
 
 
 # to return total points gain

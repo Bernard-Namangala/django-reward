@@ -5,6 +5,7 @@ from .views import index, index_details, user_login
 from django.contrib.auth import views as auth_views
 from . import views
 from django.http import request
+# app_name = 'blog'
 
 urlpatterns = [
     path('', index, name='index'),

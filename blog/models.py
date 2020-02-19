@@ -21,6 +21,7 @@ class Post(models.Model):
     status = models.IntegerField(choices=STATUS, default=0)
     image = models.ImageField(upload_to='')
     viewers = models.ManyToManyField(User, blank=True)
+    commented = models.ManyToManyField(User, blank=True, related_name="commented")
 
     class Meta:
         ordering = ['-created_on']
@@ -43,6 +44,9 @@ class Profile(models.Model):
     last_login = models.DateField(blank=True, null=True)
     # photo = models.ImageField(upload_to='media/')
 
+    def __str__(self):
+        return self.user.username
+
 
 class FirstVsit(models.Model):
     url = models.URLField()
@@ -50,6 +54,9 @@ class FirstVsit(models.Model):
 
 
 class Comment(models.Model):
-    comment = models.ForeignKey(Post, on_delete=models.CASCADE)
-    your_comment = models.TextField(blank=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    comment_text = models.CharField(max_length=5000, blank=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.comment_text

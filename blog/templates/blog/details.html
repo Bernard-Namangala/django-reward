@@ -1,8 +1,21 @@
 {% extends "base.html" %}
-{% block title %}{{ posts.title }}{% endblock %}
+{% block title %}{{ details.title }}{% endblock %}
 {% block content %}
-<div><h1>{{ post.title }}</h1></div>
-    <div>{{ post.image }}</div>
-    <div>created by {{ post.author }}</div>
+<div><h1>{{ details.title }}</h1></div>
+    <div><img src="{{ details.image.url }}" width="200" height="200"/></div>
+    <div>created by {{ details.author }}</div>
+<form method="POST">
+    {% csrf_token%}
+    {{ comment_form.as_p }}
+    <button>Comment</button>
+</form>
     <div>{{ post.content }}</div>
+{% if comments %}
+<h3>Comments on this post</h3>
+<div>
+    {% for comment in comments %}
+    {{comment}}<br/>
+{% endfor %}
+</div>
+{% endif %}
 {% endblock %}

@@ -35,3 +35,13 @@ class ProfileEditForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('date_of_birth',)
+
+
+class CommentForm(forms.Form):
+    comment_text = forms.CharField(max_length=5000, widget=forms.Textarea)
+
+    def clean_comment_text(self):
+        comment_text = self.cleaned_data['comment_text']
+        if len(comment_text) > 5000:
+            raise forms.ValidationError("comment is too long")
+        return comment_text
