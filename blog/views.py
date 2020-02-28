@@ -6,7 +6,7 @@ from django.contrib import messages, sessions
 from .models import FirstVsit, Profile, Post, Comment
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegistrationForm, UserEditForm, ProfileEditForm, CommentForm
+from .forms import UserRegistrationForm, UserEditForm, ProfileEditForm, CommentForm, PostUpload
 from django.db.models import F, Sum
 
 
@@ -143,3 +143,20 @@ def edit(request):
         user_form = UserEditForm(instance=request.user)
         profile_form = ProfileEditForm(instance=request.user)
     return render(request, 'account/edit.html', {'user_form': user_form, 'profile_form': profile_form})
+
+
+@login_required
+def post_view(request):
+    if request.method == "GET":
+        form = PostUpload()
+        return render(request, template_name='blog/upload.html', context={'form': form})
+    elif request.method == "POST":
+        form = PostUpload(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+        else:
+            print('invalid form')
+        return HttpResponseRedirect(reverse('index'))
+

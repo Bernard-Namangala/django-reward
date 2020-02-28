@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django import forms
 
-from .models import Profile
+from .models import Profile, Post
 
 
 class LoginForm(forms.Form):
@@ -45,3 +45,9 @@ class CommentForm(forms.Form):
         if len(comment_text) > 5000:
             raise forms.ValidationError("comment is too long")
         return comment_text
+
+
+class PostUpload(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ('title', 'slug', 'status', 'image')

@@ -11,6 +11,7 @@ urlpatterns = [
     path('', index, name='index'),
     path('login', user_login, name='login'),
     path('details/<slug:slug>/', index_details, name='detail'),
+    path('upload/', views.post_view, name="upload_post"),
     # url(r'^$', views.dashboard, name='dashboard'),
     url(r'^register/$', views.register, name='register'),
     url(r'^edit/$', views.edit, name='edit'),
@@ -28,6 +29,6 @@ urlpatterns = [
     url(r'^password-reset/done/$', auth_views.PasswordResetDoneView.as_view(), name='password_reset'),
     url(r'^password-reset/confirm/(?P<uidb64>[-\w]+)/(?P<token>[-\w]+)/$',
         auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    url(r'^password-reset/complete/$', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_confirm')
+    url(r'^password-reset/complete/$', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_confirm'),
 
 ]
